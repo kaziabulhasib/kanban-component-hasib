@@ -29,11 +29,27 @@ export interface KanbanColumn {
 
 export interface KanbanColumnProps {
   column: KanbanColumn;
-  tasks: Record<string, KanbanTask>; 
+  tasks: Record<string, KanbanTask>;
   onTaskMove: (
     taskId: string,
     fromColumnId: string,
     toColumnId: string,
+    newIndex: number
+  ) => void;
+  onTaskCreate: (columnId: string, task: KanbanTask) => void;
+  onTaskUpdate: (taskId: string, updates: Partial<KanbanTask>) => void;
+  onTaskDelete: (taskId: string) => void;
+}
+
+// types for the Kanban board
+
+export interface KanbanViewProps {
+  columns: KanbanColumn[];
+  tasks: Record<string, KanbanTask>;
+  onTaskMove: (
+    taskId: string,
+    fromColumn: string,
+    toColumn: string,
     newIndex: number
   ) => void;
   onTaskCreate: (columnId: string, task: KanbanTask) => void;
