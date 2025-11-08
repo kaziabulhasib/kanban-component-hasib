@@ -14,7 +14,7 @@ export interface KanbanCardProps {
   task: KanbanTask;
   columnId: string;
   handleDragStart: (
-    e: React.DragEvent<HTMLDivElement>,
+    e: React.DragEvent<HTMLElement>,
     id: string,
     columnId: string
   ) => void;
@@ -54,14 +54,15 @@ export interface KanbanColumnProps {
 
   //   drag handlers
   handleDragStart: (
-    e: React.DragEvent<HTMLDivElement>,
+    e: React.DragEvent<HTMLElement>,
     taskId: string,
     columnId: string
   ) => void;
 
   handleDragEnd: () => void;
+  handleDragOver: (e: React.DragEvent<HTMLElement>, columnId: string) => void;
 
-  handleDrop: (e: React.DragEvent<HTMLDivElement>, columnId: string) => void;
+  handleDrop: (e: React.DragEvent<HTMLElement>, columnId: string) => void;
 }
 
 // types for the Kanban board

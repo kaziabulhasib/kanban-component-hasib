@@ -15,9 +15,13 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
   const [dragData, setDragData] = useState<{
     taskId: string | null;
     fromColumnId: string | null;
+    hoverIndex: number | null;
+    targetColumnId: string | null;
   }>({
     taskId: null,
     fromColumnId: null,
+    hoverIndex: null,
+    targetColumnId: null,
   });
 
   const [columnState, setColumnState] = useState(columns);
@@ -26,14 +30,17 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
   // drag functions
 
   function handleDragStart(
-    e: React.DragEvent,
+    e: React.DragEvent<HTMLElement>,
     taskId: string,
     fromColumnId: string
   ) {
-    // Store in React state
-    setDragData({ taskId, fromColumnId });
+    setDragData({
+      taskId,
+      fromColumnId,
+      hoverIndex: null,
+      targetColumnId: null,
+    });
 
-    // Store in DataTransfer (required for HTML DnD)
     e.dataTransfer.setData(
       "application/json",
       JSON.stringify({ taskId, fromColumnId })
@@ -47,11 +54,13 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     setDragData({
       taskId: null,
       fromColumnId: null,
+      hoverIndex: null,
+      targetColumnId: null,
     });
   }
 
   function handleDrop(
-    e: React.DragEvent<HTMLDivElement>,
+    e: React.DragEvent<HTMLElement>,
     targetColumnId: string
   ) {
     e.preventDefault();
@@ -96,6 +105,21 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     );
   }
 
+  function handleDragOver(e: React.DragEvent<HTMLElement>, columnId: string) {
+    e.preventDefault();
+
+    const wrapper = (e.target as HTMLElement).closest("[data-index]");
+    if (!wrapper) return;
+
+    const hoverIndex = Number(wrapper.getAttribute("data-index"));
+
+    setDragData((prev) => ({
+      ...prev,
+      hoverIndex,
+      targetColumnId: columnId,
+    }));
+  }
+
   return (
     <div className='w-full min-h-screen overflow-x-auto bg-neutral-100 p-4'>
       <div className='flex gap-4 w-max'>
@@ -112,6 +136,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
               handleDragStart={handleDragStart}
               handleDragEnd={handleDragEnd}
               handleDrop={handleDrop}
+              handleDragOver={handleDragOver}
               onTaskCreate={(colId) =>
                 onTaskCreate(colId, {
                   id: crypto.randomUUID(),

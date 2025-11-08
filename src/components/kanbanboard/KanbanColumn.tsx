@@ -8,6 +8,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   handleDrop,
   handleDragStart,
   handleDragEnd,
+  handleDragOver,
 }) => {
   return (
     <section className='w-[300px] bg-neutral-50 rounded-lg flex flex-col border border-neutral-200'>
@@ -23,17 +24,22 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
       {/* Card list */}
       <div
         className='flex-1 overflow-y-auto p-3 flex flex-col gap-3'
-        onDragOver={(e) => e.preventDefault()} 
+        onDragOver={(e) => {
+          e.preventDefault();
+          handleDragOver(e, column.id);
+        }}
         onDrop={(e) => handleDrop(e, column.id)}>
         {tasks.length > 0 ? (
-          tasks.map((task) => (
-            <KanbanCard
-              key={task.id}
-              task={task}
-              columnId={column.id}
-              handleDragStart={handleDragStart}
-              handleDragEnd={handleDragEnd}
-            />
+          tasks.map((task, index) => (
+            <div key={task.id} data-index={index}>
+              <KanbanCard
+                key={task.id}
+                task={task}
+                columnId={column.id}
+                handleDragStart={handleDragStart}
+                handleDragEnd={handleDragEnd}
+              />
+            </div>
           ))
         ) : (
           <p className='text-neutral-400 text-sm italic'>No tasks</p>
