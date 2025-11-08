@@ -20,6 +20,9 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     fromColumnId: null,
   });
 
+  const [columnState, setColumnState] = useState(columns);
+  const [taskState, setTaskState] = useState(tasks);
+
   // drag functions
 
   function handleDragStart(
@@ -58,14 +61,47 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     const { taskId, fromColumnId } = data;
 
     if (!taskId || !fromColumnId) return;
+    // same col check
+    if (fromColumnId === targetColumnId) return;
+
+    const updatedColumns = [...columnState];
+    // find - source & target col.
+    const sourceCol = updatedColumns.find((col) => col.id === fromColumnId);
+    const targetCol = updatedColumns.find((col) => col.id === targetColumnId);
+
+    if (!sourceCol || !targetCol) return;
+
+    // remove task -s from
+    sourceCol.taskIds = sourceCol.taskIds.filter((id) => id !== taskId);
+
+    // add task - target
+    targetCol.taskIds.push(taskId);
+
+    // update task status
+    setTaskState((prev) => ({
+      ...prev,
+      [taskId]: {
+        ...prev[taskId],
+        status: targetColumnId,
+      },
+    }));
+
+    setColumnState(updatedColumns);
+
+    onTaskMove(
+      taskId,
+      fromColumnId,
+      targetColumnId,
+      targetCol.taskIds.length - 1
+    );
   }
 
   return (
     <div className='w-full min-h-screen overflow-x-auto bg-neutral-100 p-4'>
       <div className='flex gap-4 w-max'>
-        {columns.map((column) => {
+        {columnState.map((column) => {
           const tasksForColumn: KanbanTask[] = column.taskIds
-            .map((id) => tasks[id])
+            .map((id) => taskState[id])
             .filter(Boolean);
 
           return (
