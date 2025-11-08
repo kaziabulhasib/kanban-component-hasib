@@ -1,12 +1,8 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import React from "react";
+import React, { useState } from "react";
 import KanbanColumn from "./KanbanColumn";
 
-import type {
- 
-  KanbanTask,
-  KanbanViewProps,
-} from "./KanbanBoard.types";
+import type { KanbanTask, KanbanViewProps } from "./KanbanBoard.types";
 
 const KanbanBoard: React.FC<KanbanViewProps> = ({
   columns,
@@ -16,11 +12,45 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
   onTaskUpdate,
   onTaskDelete,
 }) => {
+  const [dragData, setDragData] = useState<{
+    taskId: string | null;
+    fromColumnId: string | null;
+  }>({
+    taskId: null,
+    fromColumnId: null,
+  });
+
+  // drag functions
+
+  function handleDragStart(
+    e: React.DragEvent,
+    taskId: string,
+    fromColumnId: string
+  ) {
+    // Store in React state
+    setDragData({ taskId, fromColumnId });
+
+    // Store in DataTransfer (required for HTML DnD)
+    e.dataTransfer.setData(
+      "application/json",
+      JSON.stringify({ taskId, fromColumnId })
+    );
+
+    e.dataTransfer.effectAllowed = "move";
+  }
+
+  function handleDragEnd() {
+    // Reset drag state
+    setDragData({
+      taskId: null,
+      fromColumnId: null,
+    });
+  }
+
   return (
     <div className='w-full min-h-screen overflow-x-auto bg-neutral-100 p-4'>
       <div className='flex gap-4 w-max'>
         {columns.map((column) => {
-         
           const tasksForColumn: KanbanTask[] = column.taskIds
             .map((id) => tasks[id])
             .filter(Boolean);
@@ -30,16 +60,17 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
               key={column.id}
               column={column}
               tasks={tasksForColumn}
+              handleDragStart={handleDragStart}
+              handleDragEnd={handleDragEnd} 
               onTaskCreate={(colId) =>
                 onTaskCreate(colId, {
-                 
                   id: crypto.randomUUID(),
                   title: "New Task",
                   status: colId,
                   createdAt: new Date(),
                 })
               }
-              // to do :------------------------------> drag-and-drop 
+              // to do :------------------------------> drag-and-drop
               onTaskMove={onTaskMove}
               // edit task (modal later)
               onTaskUpdate={onTaskUpdate}

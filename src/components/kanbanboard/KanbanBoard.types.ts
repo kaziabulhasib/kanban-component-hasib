@@ -12,7 +12,17 @@ export interface KanbanTask {
 
 export interface KanbanCardProps {
   task: KanbanTask;
+  columnId: string;
+  handleDragStart: (
+    e: React.DragEvent<HTMLDivElement>,
+    id: string,
+    columnId: string
+  ) => void;
+
+  handleDragEnd: () => void;
+
   isDragging?: boolean;
+
   onEdit?: (task: KanbanTask) => void;
   onDelete?: (taskId: string) => void;
 }
@@ -29,17 +39,33 @@ export interface KanbanColumn {
 
 export interface KanbanColumnProps {
   column: KanbanColumn;
-  tasks: Record<string, KanbanTask>;
+  tasks: KanbanTask[];  
+
+  
   onTaskMove: (
     taskId: string,
     fromColumnId: string,
     toColumnId: string,
     newIndex: number
   ) => void;
+
   onTaskCreate: (columnId: string, task: KanbanTask) => void;
   onTaskUpdate: (taskId: string, updates: Partial<KanbanTask>) => void;
   onTaskDelete: (taskId: string) => void;
+
+  //   drag handlers
+  handleDragStart: (
+    e: React.DragEvent<HTMLDivElement>,
+    taskId: string,
+    columnId: string
+  ) => void;
+
+  handleDragEnd: () => void;
 }
+
+
+
+
 
 // types for the Kanban board
 

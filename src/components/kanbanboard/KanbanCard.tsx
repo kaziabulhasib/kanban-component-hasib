@@ -9,12 +9,18 @@ import {
 import clsx from "clsx";
 const KanbanCard: React.FC<KanbanCardProps> = ({
   task,
+  columnId,
+  handleDragStart,
+  handleDragEnd,
   isDragging,
   onEdit,
   onDelete,
 }) => {
   return (
     <div
+      draggable
+      onDragStart={(e) => handleDragStart(e, task.id, columnId)}
+      onDragEnd={handleDragEnd}
       role='button'
       tabIndex={0}
       aria-label={`${task.title}. Status: ${task.status}. Priority: ${
