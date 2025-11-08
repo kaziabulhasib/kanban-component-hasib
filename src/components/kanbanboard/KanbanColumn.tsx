@@ -5,7 +5,7 @@ import type { KanbanColumnProps } from "./KanbanBoard.types";
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
   column,
   tasks,
-  // onTaskCreate,
+  handleDrop,
   handleDragStart,
   handleDragEnd,
 }) => {
@@ -21,7 +21,10 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
       </header>
 
       {/* Card list */}
-      <div className='flex-1 overflow-y-auto p-3 flex flex-col gap-3'>
+      <div
+        className='flex-1 overflow-y-auto p-3 flex flex-col gap-3'
+        onDragOver={(e) => e.preventDefault()} 
+        onDrop={(e) => handleDrop(e, column.id)}>
         {tasks.length > 0 ? (
           tasks.map((task) => (
             <KanbanCard

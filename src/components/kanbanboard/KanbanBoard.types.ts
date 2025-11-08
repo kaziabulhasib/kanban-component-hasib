@@ -39,9 +39,8 @@ export interface KanbanColumn {
 
 export interface KanbanColumnProps {
   column: KanbanColumn;
-  tasks: KanbanTask[];  
+  tasks: KanbanTask[];
 
-  
   onTaskMove: (
     taskId: string,
     fromColumnId: string,
@@ -61,11 +60,9 @@ export interface KanbanColumnProps {
   ) => void;
 
   handleDragEnd: () => void;
+
+  handleDrop: (e: React.DragEvent<HTMLDivElement>, columnId: string) => void;
 }
-
-
-
-
 
 // types for the Kanban board
 

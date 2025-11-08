@@ -47,6 +47,19 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     });
   }
 
+  function handleDrop(
+    e: React.DragEvent<HTMLDivElement>,
+    targetColumnId: string
+  ) {
+    e.preventDefault();
+
+    const data = JSON.parse(e.dataTransfer.getData("application/json"));
+
+    const { taskId, fromColumnId } = data;
+
+    if (!taskId || !fromColumnId) return;
+  }
+
   return (
     <div className='w-full min-h-screen overflow-x-auto bg-neutral-100 p-4'>
       <div className='flex gap-4 w-max'>
@@ -61,7 +74,8 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
               column={column}
               tasks={tasksForColumn}
               handleDragStart={handleDragStart}
-              handleDragEnd={handleDragEnd} 
+              handleDragEnd={handleDragEnd}
+              handleDrop={handleDrop}
               onTaskCreate={(colId) =>
                 onTaskCreate(colId, {
                   id: crypto.randomUUID(),
