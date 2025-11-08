@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import React, { useState } from "react";
 import KanbanColumn from "./KanbanColumn";
 
@@ -27,7 +26,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
   const [columnState, setColumnState] = useState(columns);
   const [taskState, setTaskState] = useState(tasks);
 
-  // drag functions
+  // drag & drop functions
 
   function handleDragStart(
     e: React.DragEvent<HTMLElement>,
@@ -59,34 +58,47 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     });
   }
 
-  function handleDrop(
-    e: React.DragEvent<HTMLElement>,
-    targetColumnId: string
-  ) {
+  
+
+  function handleDrop(e: React.DragEvent<HTMLElement>, targetColumnId: string) {
     e.preventDefault();
 
     const data = JSON.parse(e.dataTransfer.getData("application/json"));
-
     const { taskId, fromColumnId } = data;
 
     if (!taskId || !fromColumnId) return;
-    // same col check
-    if (fromColumnId === targetColumnId) return;
 
     const updatedColumns = [...columnState];
-    // find - source & target col.
     const sourceCol = updatedColumns.find((col) => col.id === fromColumnId);
     const targetCol = updatedColumns.find((col) => col.id === targetColumnId);
 
     if (!sourceCol || !targetCol) return;
 
-    // remove task -s from
+    const isSameColumn = fromColumnId === targetColumnId;
+
+    if (isSameColumn) {
+      // remove
+      sourceCol.taskIds = sourceCol.taskIds.filter((id) => id !== taskId);
+
+      // insert at hoverIndex
+      sourceCol.taskIds.splice(dragData.hoverIndex!, 0, taskId);
+
+      setColumnState(updatedColumns);
+
+      onTaskMove(taskId, fromColumnId, targetColumnId, dragData.hoverIndex!);
+
+      return;
+    }
+
+    // CROSS-COLUMN MOVE 
     sourceCol.taskIds = sourceCol.taskIds.filter((id) => id !== taskId);
 
-    // add task - target
-    targetCol.taskIds.push(taskId);
+    targetCol.taskIds.splice(
+      dragData.hoverIndex ?? targetCol.taskIds.length,
+      0,
+      taskId
+    );
 
-    // update task status
     setTaskState((prev) => ({
       ...prev,
       [taskId]: {
@@ -101,7 +113,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
       taskId,
       fromColumnId,
       targetColumnId,
-      targetCol.taskIds.length - 1
+      dragData.hoverIndex ?? targetCol.taskIds.length - 1
     );
   }
 
