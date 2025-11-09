@@ -9,6 +9,8 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   handleDragStart,
   handleDragEnd,
   handleDragOver,
+  onTaskCreate,
+  onEditTask,
 }) => {
   return (
     <section className='w-[300px] bg-neutral-50 rounded-lg flex flex-col border border-neutral-200'>
@@ -49,8 +51,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
       {/* Add task button */}
       <button
         className='py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition rounded-b-lg'
-        // onClick={() => onTaskCreate?.(column.id)}
-      >
+        onClick={() => onTaskCreate?.(column.id)}>
         + Add Task
       </button>
     </section>

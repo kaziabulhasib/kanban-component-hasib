@@ -48,10 +48,10 @@ export interface KanbanColumnProps {
     newIndex: number
   ) => void;
 
-  onTaskCreate: (columnId: string, task: KanbanTask) => void;
+  onTaskCreate: (columnId: string) => void;
   onTaskUpdate: (taskId: string, updates: Partial<KanbanTask>) => void;
   onTaskDelete: (taskId: string) => void;
-
+  onEditTask?: (task: KanbanTask) => void;
   //   drag handlers
   handleDragStart: (
     e: React.DragEvent<HTMLElement>,

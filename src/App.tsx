@@ -3,6 +3,7 @@ import type {
   KanbanColumn as ColumnType,
   KanbanTask,
 } from "./components/kanbanboard/KanbanBoard.types";
+import TestPage from "./pages/TestModal";
 
 function App() {
   const columns: ColumnType[] = [
@@ -97,6 +98,8 @@ function App() {
       onTaskUpdate={(taskId, updates) => console.log("Update", taskId, updates)}
       onTaskDelete={(taskId) => console.log("Delete", taskId)}
     />
+
+    // <TestPage />
   );
 }
 

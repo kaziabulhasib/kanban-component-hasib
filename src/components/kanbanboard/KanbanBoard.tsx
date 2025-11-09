@@ -2,12 +2,13 @@ import React, { useState } from "react";
 import KanbanColumn from "./KanbanColumn";
 
 import type { KanbanTask, KanbanViewProps } from "./KanbanBoard.types";
+import TaskModal from "./TaskModal";
 
 const KanbanBoard: React.FC<KanbanViewProps> = ({
   columns,
   tasks,
   onTaskMove,
-  onTaskCreate,
+
   onTaskUpdate,
   onTaskDelete,
 }) => {
@@ -25,6 +26,12 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
 
   const [columnState, setColumnState] = useState(columns);
   const [taskState, setTaskState] = useState(tasks);
+
+  // state for modal
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
+  const [draftTask, setDraftTask] = useState<KanbanTask | null>(null);
 
   // drag & drop functions
 
@@ -58,8 +65,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     });
   }
 
-  
-
   function handleDrop(e: React.DragEvent<HTMLElement>, targetColumnId: string) {
     e.preventDefault();
 
@@ -90,7 +95,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
       return;
     }
 
-    // CROSS-COLUMN MOVE 
+    // CROSS-COLUMN MOVE
     sourceCol.taskIds = sourceCol.taskIds.filter((id) => id !== taskId);
 
     targetCol.taskIds.splice(
@@ -132,6 +137,23 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     }));
   }
 
+  // modal functions
+  function handleOpenCreate(columnId: string) {
+    setActiveColumnId(columnId);
+
+    setDraftTask({
+      id: crypto.randomUUID(),
+      title: "",
+      status: columnId,
+      createdAt: new Date(),
+      tags: [],
+    });
+
+    setIsModalOpen(true);
+  }
+
+  // function handleEditModal(columnId: string) {}
+
   return (
     <div className='w-full min-h-screen overflow-x-auto bg-neutral-100 p-4'>
       <div className='flex gap-4 w-max'>
@@ -149,24 +171,44 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
               handleDragEnd={handleDragEnd}
               handleDrop={handleDrop}
               handleDragOver={handleDragOver}
-              onTaskCreate={(colId) =>
-                onTaskCreate(colId, {
-                  id: crypto.randomUUID(),
-                  title: "New Task",
-                  status: colId,
-                  createdAt: new Date(),
-                })
-              }
-              // to do :------------------------------> drag-and-drop
+              onTaskCreate={handleOpenCreate}
               onTaskMove={onTaskMove}
-              // edit task (modal later)
               onTaskUpdate={onTaskUpdate}
-              // delete task
               onTaskDelete={onTaskDelete}
+              // onEditTask={handleEditModal}
             />
           );
         })}
       </div>
+      <TaskModal
+        open={isModalOpen}
+        initialTask={draftTask}
+        onClose={() => setIsModalOpen(false)}
+        onSave={(taskData) => {
+          if (!draftTask) return;
+
+          const newTask: KanbanTask = {
+            ...draftTask,
+            ...taskData,
+          };
+
+          setTaskState((prev) => ({
+            ...prev,
+            [newTask.id]: newTask,
+          }));
+
+          
+          setColumnState((prev) =>
+            prev.map((col) =>
+              col.id === newTask.status
+                ? { ...col, taskIds: [...col.taskIds, newTask.id] }
+                : col
+            )
+          );
+
+          setIsModalOpen(false);
+        }}
+      />
     </div>
   );
 };
