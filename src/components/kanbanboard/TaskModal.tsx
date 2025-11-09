@@ -5,10 +5,7 @@ import type { KanbanTask } from "./KanbanBoard.types";
 interface TaskModalProps {
   open: boolean;
   onClose: () => void;
-
-  // create or edit
   initialTask: KanbanTask | null;
-
   onSave: (taskData: Partial<KanbanTask>) => void;
 }
 
@@ -23,39 +20,55 @@ const TaskModal: React.FC<TaskModalProps> = ({
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [priority, setPriority] = useState<KanbanTask["priority"]>("medium");
-  const [tags, setTags] = useState<string[]>([]);
-  const [dueDate, setDueDate] = useState<string>("");
+  const [tagsInput, setTagsInput] = useState("");
+  const [dueDate, setDueDate] = useState("");
 
-  // Load initial values when editing
   useEffect(() => {
     if (initialTask) {
       setTitle(initialTask.title);
       setDescription(initialTask.description || "");
       setPriority(initialTask.priority || "medium");
-      setTags(initialTask.tags || []);
+      setTagsInput((initialTask.tags || []).join(", "));
       setDueDate(
         initialTask.dueDate
           ? new Date(initialTask.dueDate).toISOString().slice(0, 10)
           : ""
       );
     } else {
-      // Reset for fresh creation
       setTitle("");
       setDescription("");
       setPriority("medium");
-      setTags([]);
+      setTagsInput("");
       setDueDate("");
     }
   }, [initialTask]);
 
+  function todayStr() {
+    const d = new Date();
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const dd = String(d.getDate()).padStart(2, "0");
+    return `${yyyy}-${mm}-${dd}`;
+  }
+
   function handleSubmit() {
     if (!title.trim()) return alert("Task title is required.");
+
+    if (dueDate && dueDate < todayStr()) {
+      alert("Due date cannot be earlier than today.");
+      return;
+    }
+
+    const parsedTags = tagsInput
+      .split(/[, \n]+/)
+      .map((t) => t.trim())
+      .filter(Boolean);
 
     onSave({
       title,
       description,
       priority,
-      tags,
+      tags: parsedTags,
       dueDate: dueDate ? new Date(dueDate) : undefined,
     });
 
@@ -70,7 +83,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
         </h2>
 
         <div className='grid grid-cols-1 gap-5'>
-          {/* Title */}
           <div>
             <label className='block text-sm mb-1 font-medium text-neutral-700'>
               Title *
@@ -83,7 +95,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
             />
           </div>
 
-          {/* Description */}
           <div>
             <label className='block text-sm mb-1 font-medium text-neutral-700'>
               Description
@@ -95,7 +106,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
             />
           </div>
 
-          {/* Priority */}
           <div className='grid grid-cols-1 gap-2'>
             <label className='block text-sm font-medium text-neutral-700'>
               Priority
@@ -112,37 +122,28 @@ const TaskModal: React.FC<TaskModalProps> = ({
             </select>
           </div>
 
-          {/* Tags */}
           <div>
             <label className='block text-sm mb-1 font-medium text-neutral-700'>
               Tags{" "}
-              <span className='text-[11px] font-light '>
-                {" "}
+              <span className='text-[11px] font-light'>
                 (separate with commas)
               </span>
             </label>
             <input
               type='text'
               className='w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
-              value={tags.join(", ")}
-              onChange={(e) =>
-                setTags(
-                  e.target.value
-                    .split(/[, ]+/)
-                    .map((t) => t.trim())
-                    .filter(Boolean)
-                )
-              }
+              value={tagsInput}
+              onChange={(e) => setTagsInput(e.target.value)}
             />
           </div>
 
-          {/* Due Date */}
           <div>
             <label className='block text-sm mb-1 font-medium text-neutral-700'>
               Due Date
             </label>
             <input
               type='date'
+              min={todayStr()}
               className='w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
@@ -150,7 +151,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
           </div>
         </div>
 
-        {/* Footer buttons */}
         <div className='flex justify-end gap-3 pt-4 border-t border-neutral-200'>
           <button
             onClick={onClose}
