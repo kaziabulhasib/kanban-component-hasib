@@ -152,7 +152,15 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     setIsModalOpen(true);
   }
 
-  // function handleEditModal(columnId: string) {}
+  // handle edit task
+
+  function handleEditTask(task: KanbanTask) {
+    setDraftTask(task);
+    setActiveColumnId(task.status);
+    setIsModalOpen(true);
+  }
+
+  //
 
   return (
     <div className='w-full min-h-screen overflow-x-auto bg-neutral-100 p-4'>
@@ -175,7 +183,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
               onTaskMove={onTaskMove}
               onTaskUpdate={onTaskUpdate}
               onTaskDelete={onTaskDelete}
-              // onEditTask={handleEditModal}
+              onEditTask={handleEditTask}
             />
           );
         })}
@@ -184,39 +192,37 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
         open={isModalOpen}
         initialTask={draftTask}
         onClose={() => setIsModalOpen(false)}
-        onSave={(data) => {
+        onSave={(updated) => {
           if (!activeColumnId) return;
 
-          const newId = crypto.randomUUID();
-
-          //  Final task object
+          // Create new task
           const newTask: KanbanTask = {
-            id: newId,
-            title: data.title!,
-            description: data.description || "",
-            priority: data.priority || "medium",
-            tags: data.tags || [],
+            id: crypto.randomUUID(),
+            title: updated.title ?? "",
+            description: updated.description,
+            priority: updated.priority,
+            tags: updated.tags ?? [],
+            dueDate: updated.dueDate,
             status: activeColumnId,
             createdAt: new Date(),
-            dueDate: data.dueDate,
           };
 
-          // Save to taskState
+          //  Add task into taskState 
           setTaskState((prev) => ({
             ...prev,
-            [newId]: newTask,
+            [newTask.id]: newTask,
           }));
 
-          // Add to column
+          // Insert  task into   column's taskIds
           setColumnState((prev) =>
             prev.map((col) =>
               col.id === activeColumnId
-                ? { ...col, taskIds: [...col.taskIds, newId] }
+                ? { ...col, taskIds: [...col.taskIds, newTask.id] }
                 : col
             )
           );
 
-          // Close modal
+         
           setIsModalOpen(false);
         }}
       />

@@ -40,6 +40,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 columnId={column.id}
                 handleDragStart={handleDragStart}
                 handleDragEnd={handleDragEnd}
+                 onEdit={onEditTask}
               />
             </div>
           ))
