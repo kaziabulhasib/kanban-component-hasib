@@ -64,93 +64,106 @@ const TaskModal: React.FC<TaskModalProps> = ({
 
   return (
     <Modal open={open} onClose={onClose}>
-      <h2 className='text-xl font-semibold mb-4'>
-        {initialTask ? "Edit Task" : "Create Task"}
-      </h2>
+      <div className='space-y-6'>
+        <h2 className='text-2xl font-semibold text-neutral-900'>
+          {initialTask ? "New Task" : "Edit Task"}
+        </h2>
 
-      <div className='space-y-4'>
-        {/* Title */}
-        <div>
-          <label className='block text-sm font-medium mb-1'>Title</label>
-          <input
-            type='text'
-            className='w-full border rounded px-3 py-2 text-sm'
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-          />
+        <div className='grid grid-cols-1 gap-5'>
+          {/* Title */}
+          <div>
+            <label className='block text-sm mb-1 font-medium text-neutral-700'>
+              Title *
+            </label>
+            <input
+              type='text'
+              className='w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+          </div>
+
+          {/* Description */}
+          <div>
+            <label className='block text-sm mb-1 font-medium text-neutral-700'>
+              Description
+            </label>
+            <textarea
+              className='w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm h-24 resize-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+            />
+          </div>
+
+          {/* Priority */}
+          <div className='grid grid-cols-1 gap-2'>
+            <label className='block text-sm font-medium text-neutral-700'>
+              Priority
+            </label>
+            <select
+              value={priority}
+              onChange={(e) => setPriority(e.target.value as any)}
+              className='w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500'>
+              {priorities.map((p) => (
+                <option key={p} value={p}>
+                  {p.charAt(0).toUpperCase() + p.slice(1)}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Tags */}
+          <div>
+            <label className='block text-sm mb-1 font-medium text-neutral-700'>
+              Tags{" "}
+              <span className='text-[11px] font-light '>
+                {" "}
+                (separate with commas)
+              </span>
+            </label>
+            <input
+              type='text'
+              className='w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+              value={tags.join(", ")}
+              onChange={(e) =>
+                setTags(
+                  e.target.value
+                    .split(/[, ]+/)
+                    .map((t) => t.trim())
+                    .filter(Boolean)
+                )
+              }
+            />
+          </div>
+
+          {/* Due Date */}
+          <div>
+            <label className='block text-sm mb-1 font-medium text-neutral-700'>
+              Due Date
+            </label>
+            <input
+              type='date'
+              className='w-full border border-neutral-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+              value={dueDate}
+              onChange={(e) => setDueDate(e.target.value)}
+            />
+          </div>
         </div>
 
-        {/* Description */}
-        <div>
-          <label className='block text-sm font-medium mb-1'>Description</label>
-          <textarea
-            className='w-full border rounded px-3 py-2 text-sm h-20 resize-none'
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
+        {/* Footer buttons */}
+        <div className='flex justify-end gap-3 pt-4 border-t border-neutral-200'>
+          <button
+            onClick={onClose}
+            className='px-4 py-2 text-sm rounded-lg bg-neutral-200 hover:bg-neutral-300 transition'>
+            Cancel
+          </button>
+
+          <button
+            onClick={handleSubmit}
+            className='px-4 py-2 text-sm rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition'>
+            {initialTask ? "Save Changes" : "Create Task"}
+          </button>
         </div>
-
-        {/* Priority */}
-        <div>
-          <label className='block text-sm font-medium mb-1'>Priority</label>
-          <select
-            value={priority}
-            onChange={(e) =>
-              setPriority(e.target.value as KanbanTask["priority"])
-            }
-            className='w-full border rounded px-3 py-2 text-sm'>
-            {priorities.map((p) => (
-              <option key={p} value={p}>
-                {p.charAt(0).toUpperCase() + p.slice(1)}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {/* Tags */}
-        <div>
-          <label className='block text-sm font-medium mb-1'>
-            Tags (comma separated)
-          </label>
-          <input
-            type='text'
-            className='w-full border rounded px-3 py-2 text-sm'
-            value={tags.join(", ")}
-            onChange={(e) =>
-              setTags(
-                e.target.value
-                  .split(",")
-                  .map((t) => t.trim())
-                  .filter(Boolean)
-              )
-            }
-          />
-        </div>
-
-        {/* Due Date */}
-        <div>
-          <label className='block text-sm font-medium mb-1'>Due Date</label>
-          <input
-            type='date'
-            className='w-full border rounded px-3 py-2 text-sm'
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className='flex justify-end gap-2 mt-6'>
-        <button
-          className='px-4 py-2 text-sm bg-neutral-200 rounded hover:bg-neutral-300'
-          onClick={onClose}>
-          Cancel
-        </button>
-
-        <button
-          className='px-4 py-2 text-sm bg-primary-500 text-white rounded hover:bg-primary-600'
-          onClick={handleSubmit}>
-          {initialTask ? "Save Changes" : "Create Task"}
-        </button>
       </div>
     </Modal>
   );
