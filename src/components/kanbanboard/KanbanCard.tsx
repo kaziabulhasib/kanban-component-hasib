@@ -15,6 +15,7 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
   isDragging,
   onEdit,
   onDelete,
+  onRequestDelete,
 }) => {
   return (
     <div
@@ -38,7 +39,7 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
           {task.title}
         </h4>
 
-        {task.priority && (
+        {/* {task.priority && (
           <span
             className={clsx(
               "text-xs px-2 py-0.5 rounded",
@@ -46,7 +47,29 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
             )}>
             {task.priority}
           </span>
-        )}
+        )} */}
+
+        {/* priority & delete request */}
+        <div className='flex items-center gap-2'>
+          {task.priority && (
+            <span
+              className={clsx(
+                "text-xs px-2 py-0.5 rounded",
+                getPriorityColor(task.priority)
+              )}>
+              {task.priority}
+            </span>
+          )}
+          <button
+            className='text-xs text-red-600 hover:underline'
+            onClick={(e) => {
+              e.stopPropagation();
+              onRequestDelete?.(task);
+            }}
+            aria-label={`Delete ${task.title}`}>
+            Delete
+          </button>
+        </div>
       </div>
 
       {/* Description */}

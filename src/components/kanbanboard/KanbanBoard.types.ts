@@ -24,6 +24,8 @@ export interface KanbanCardProps {
   isDragging?: boolean;
 
   onEdit?: (task: KanbanTask) => void;
+
+  onRequestDelete?: (task: KanbanTask) => void;
   onDelete?: (taskId: string) => void;
 }
 
@@ -50,6 +52,9 @@ export interface KanbanColumnProps {
 
   onTaskCreate: (columnId: string) => void;
   onTaskUpdate: (taskId: string, updates: Partial<KanbanTask>) => void;
+
+  onRequestDelete?: (task: KanbanTask) => void;
+  
   onTaskDelete: (taskId: string) => void;
   onEditTask?: (task: KanbanTask) => void;
   //   drag handlers

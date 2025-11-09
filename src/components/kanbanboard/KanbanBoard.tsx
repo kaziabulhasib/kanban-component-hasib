@@ -3,6 +3,7 @@ import KanbanColumn from "./KanbanColumn";
 
 import type { KanbanTask, KanbanViewProps } from "./KanbanBoard.types";
 import TaskModal from "./TaskModal";
+import ConfirmDelete from "../primitives/ConfirmDelete";
 
 const KanbanBoard: React.FC<KanbanViewProps> = ({
   columns,
@@ -32,6 +33,11 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<KanbanTask | null>(null);
+
+  // state for delete confirmation
+
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [taskToDelete, setTaskToDelete] = useState<KanbanTask | null>(null);
 
   // drag & drop functions
 
@@ -160,7 +166,34 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     setIsModalOpen(true);
   }
 
-  //
+  // delete confirmation
+  function handleRequestDelete(task: KanbanTask) {
+    setTaskToDelete(task);
+    setConfirmOpen(true);
+  }
+
+  // delete task
+
+  function handleConfirmDelete(taskId: string) {
+    // remove from tasks map
+    setTaskState((prev) => {
+      const next = { ...prev };
+      delete next[taskId];
+      return next;
+    });
+
+    setColumnState((prev) =>
+      prev.map((col) =>
+        col.taskIds.includes(taskId)
+          ? { ...col, taskIds: col.taskIds.filter((id) => id !== taskId) }
+          : col
+      )
+    );
+
+    onTaskDelete(taskId);
+    setConfirmOpen(false);
+    setTaskToDelete(null);
+  }
 
   return (
     <div className='w-full min-h-screen overflow-x-auto bg-neutral-100 p-4'>
@@ -182,12 +215,14 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
               onTaskCreate={handleOpenCreate}
               onTaskMove={onTaskMove}
               onTaskUpdate={onTaskUpdate}
-              onTaskDelete={onTaskDelete}
+              onRequestDelete={handleRequestDelete}
+              onTaskDelete={handleConfirmDelete}
               onEditTask={handleEditTask}
             />
           );
         })}
       </div>
+      {/* modal component */}
       <TaskModal
         open={isModalOpen}
         initialTask={draftTask}
@@ -207,7 +242,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
             createdAt: new Date(),
           };
 
-          //  Add task into taskState 
+          //  Add task into taskState
           setTaskState((prev) => ({
             ...prev,
             [newTask.id]: newTask,
@@ -222,9 +257,17 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
             )
           );
 
-         
           setIsModalOpen(false);
         }}
+      />
+
+      {/* delete confirmation component  */}
+
+      <ConfirmDelete
+        open={confirmOpen}
+        task={taskToDelete}
+        onClose={() => setConfirmOpen(false)}
+        onConfirm={handleConfirmDelete}
       />
     </div>
   );

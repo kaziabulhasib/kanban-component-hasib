@@ -1,6 +1,6 @@
-import React from "react";
 import KanbanCard from "./KanbanCard";
 import type { KanbanColumnProps } from "./KanbanBoard.types";
+import React from "react";
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
   column,
@@ -11,6 +11,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   handleDragOver,
   onTaskCreate,
   onEditTask,
+  onRequestDelete,
 }) => {
   return (
     <section className='w-[300px] bg-neutral-50 rounded-lg flex flex-col border border-neutral-200'>
@@ -40,7 +41,8 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 columnId={column.id}
                 handleDragStart={handleDragStart}
                 handleDragEnd={handleDragEnd}
-                 onEdit={onEditTask}
+                onEdit={onEditTask}
+                onRequestDelete={onRequestDelete}
               />
             </div>
           ))
