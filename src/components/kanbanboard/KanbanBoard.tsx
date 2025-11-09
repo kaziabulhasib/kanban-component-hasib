@@ -184,28 +184,39 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
         open={isModalOpen}
         initialTask={draftTask}
         onClose={() => setIsModalOpen(false)}
-        onSave={(taskData) => {
-          if (!draftTask) return;
+        onSave={(data) => {
+          if (!activeColumnId) return;
 
+          const newId = crypto.randomUUID();
+
+          //  Final task object
           const newTask: KanbanTask = {
-            ...draftTask,
-            ...taskData,
+            id: newId,
+            title: data.title!,
+            description: data.description || "",
+            priority: data.priority || "medium",
+            tags: data.tags || [],
+            status: activeColumnId,
+            createdAt: new Date(),
+            dueDate: data.dueDate,
           };
 
+          // Save to taskState
           setTaskState((prev) => ({
             ...prev,
-            [newTask.id]: newTask,
+            [newId]: newTask,
           }));
 
-          
+          // Add to column
           setColumnState((prev) =>
             prev.map((col) =>
-              col.id === newTask.status
-                ? { ...col, taskIds: [...col.taskIds, newTask.id] }
+              col.id === activeColumnId
+                ? { ...col, taskIds: [...col.taskIds, newId] }
                 : col
             )
           );
 
+          // Close modal
           setIsModalOpen(false);
         }}
       />
