@@ -144,17 +144,10 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
   }
 
   // modal functions
+
   function handleOpenCreate(columnId: string) {
     setActiveColumnId(columnId);
-
-    setDraftTask({
-      id: crypto.randomUUID(),
-      title: "",
-      status: columnId,
-      createdAt: new Date(),
-      tags: [],
-    });
-
+    setDraftTask(null); // ✅ important: keep this null for CREATE mode
     setIsModalOpen(true);
   }
 

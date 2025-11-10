@@ -82,6 +82,8 @@ const TaskModal: React.FC<TaskModalProps> = ({
           {initialTask ? "Edit Task" : "New Task"}
         </h2>
 
+     
+
         <div className='grid grid-cols-1 gap-5'>
           <div>
             <label className='block text-sm mb-1 font-medium text-neutral-700'>
