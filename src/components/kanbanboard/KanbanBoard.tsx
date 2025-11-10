@@ -18,26 +18,18 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
   const {
     columnState,
     taskState,
-
-    // modal
     isModalOpen,
     activeColumnId,
     draftTask,
     openCreate,
     openEdit,
     setIsModalOpen,
-
-    // delete
     confirmOpen,
     taskToDelete,
     requestDelete,
     confirmDelete,
     setConfirmOpen,
-
-    // keyboard
     handleKeyboardMove,
-
-    // setters
     setColumnState,
     setTaskState,
   } = useKanbanBoard(columns, tasks, {
@@ -51,12 +43,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
 
   return (
     <div className='w-full min-h-screen bg-neutral-100 p-4'>
-      {/* MOBILE TABS */}
-      <div
-        className='
-          flex gap-2 mb-3 sm:hidden
-          overflow-x-auto whitespace-nowrap scrollbar-hide py-1
-        '>
+      <div className='flex gap-2 mb-3 sm:hidden overflow-x-auto whitespace-nowrap scrollbar-hide py-1'>
         {columnState.map((col, index) => (
           <button
             key={col.id}
@@ -66,16 +53,12 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
               const width = slider.clientWidth;
               slider.scrollTo({ left: width * index, behavior: "smooth" });
             }}
-            className='
-              px-4 py-2 text-sm rounded-lg
-              bg-neutral-200 whitespace-nowrap flex-shrink-0
-            '>
+            className='px-4 py-2 text-sm rounded-lg bg-neutral-200 whitespace-nowrap flex-shrink-0'>
             {col.title}
           </button>
         ))}
       </div>
 
-      {/* COLUMN WRAPPER */}
       <div
         id='kanban-slider'
         className='
@@ -93,10 +76,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
           return (
             <div
               key={column.id}
-              className='
-                shrink-0 snap-start
-                w-full md:w-1/2 lg:w-[320px]
-              '>
+              className='shrink-0 snap-start w-full md:w-1/2 lg:w-[320px]'>
               <KanbanColumnComponent
                 column={column}
                 tasks={tasksForColumn}
@@ -117,7 +97,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
         })}
       </div>
 
-      {/* MODAL */}
       <TaskModal
         open={isModalOpen}
         initialTask={draftTask}

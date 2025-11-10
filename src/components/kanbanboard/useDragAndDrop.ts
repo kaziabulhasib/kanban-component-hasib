@@ -52,9 +52,11 @@ export function useDragAndDrop(
   function handleDragOver(e: React.DragEvent<HTMLElement>, columnId: string) {
     e.preventDefault();
 
-    // ✅ Prevent drag-over on full column
     const col = columnState.find((c) => c.id === columnId);
-    if (col?.maxTasks && col.taskIds.length >= col.maxTasks) {
+    const isSameColumn = dragData.fromColumnId === columnId;
+
+    // Block drag-over only for cross-column moves
+    if (!isSameColumn && col?.maxTasks && col.taskIds.length >= col.maxTasks) {
       return;
     }
 
@@ -80,13 +82,17 @@ export function useDragAndDrop(
 
     if (!sourceCol || !targetCol) return;
 
-    // ✅ Prevent drop into full column
-    if (targetCol.maxTasks && targetCol.taskIds.length >= targetCol.maxTasks) {
+    const isSameColumn = fromColumnId === targetColumnId;
+
+    // Block cross-column moves only
+    if (
+      !isSameColumn &&
+      targetCol.maxTasks &&
+      targetCol.taskIds.length >= targetCol.maxTasks
+    ) {
       alert("Cannot move task. Target column is full.");
       return;
     }
-
-    const isSameColumn = fromColumnId === targetColumnId;
 
     if (isSameColumn) {
       sourceCol.taskIds = sourceCol.taskIds.filter((id) => id !== taskId);
@@ -105,7 +111,7 @@ export function useDragAndDrop(
       taskId
     );
 
-    setTaskState((prev: any) => ({
+    setTaskState((prev) => ({
       ...prev,
       [taskId]: { ...prev[taskId], status: targetColumnId },
     }));
