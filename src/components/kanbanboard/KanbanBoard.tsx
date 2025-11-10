@@ -30,7 +30,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
 
     const parsed = JSON.parse(saved);
 
-    // rehydrate dates
     for (const id in parsed) {
       if (parsed[id].dueDate) parsed[id].dueDate = new Date(parsed[id].dueDate);
       parsed[id].createdAt = new Date(parsed[id].createdAt);
@@ -53,17 +52,14 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<KanbanTask | null>(null);
 
-  // persist columns
   useEffect(() => {
     localStorage.setItem(STORAGE_COLUMNS, JSON.stringify(columnState));
   }, [columnState]);
 
-  // persist tasks
   useEffect(() => {
     localStorage.setItem(STORAGE_TASKS, JSON.stringify(taskState));
   }, [taskState]);
 
-  // DRAG HANDLERS
   function handleDragStart(
     e: React.DragEvent<HTMLElement>,
     taskId: string,
@@ -151,7 +147,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     }));
   }
 
-  // CREATE / EDIT MODAL
   function handleOpenCreate(columnId: string) {
     setActiveColumnId(columnId);
     setDraftTask(null);
@@ -164,7 +159,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     setIsModalOpen(true);
   }
 
-  // DELETE
   function handleRequestDelete(task: KanbanTask) {
     setTaskToDelete(task);
     setConfirmOpen(true);
@@ -190,7 +184,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     setTaskToDelete(null);
   }
 
-  // KEYBOARD MOVE (UP/DOWN/LEFT/RIGHT)
   function handleKeyboardMove(taskId: string, columnId: string, key: string) {
     const colIndex = columnState.findIndex((c) => c.id === columnId);
     if (colIndex === -1) return;
@@ -256,7 +249,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
       return;
     }
 
-    // reorder same column
     setColumnState((prev) =>
       prev.map((col) => (col.id === columnId ? { ...col, taskIds } : col))
     );
@@ -264,7 +256,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
 
   return (
     <div className='w-full min-h-screen bg-neutral-100 p-4'>
-      {/* MOBILE TABS: horizontal scroll + no wrap */}
       <div
         className='
           flex 
@@ -299,7 +290,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
         ))}
       </div>
 
-      {/* COLUMN WRAPPER */}
       <div
         id='kanban-slider'
         className='
@@ -312,9 +302,9 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
           max-sm:snap-x
           max-sm:snap-mandatory
 
-          sm:flex-row
-          sm:flex-wrap
-          sm:overflow-x-auto
+          md:flex-nowrap
+          md:snap-x
+          md:snap-mandatory
 
           lg:flex-nowrap
         '
@@ -330,9 +320,8 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
               className='
                 shrink-0
                 snap-start
-
-                max-sm:w-full
-                sm:w-1/2
+                w-full
+                md:w-1/2
                 lg:w-[320px]
               '>
               <KanbanColumnComponent
@@ -355,7 +344,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
         })}
       </div>
 
-      {/* MODALS */}
       <TaskModal
         open={isModalOpen}
         initialTask={draftTask}
