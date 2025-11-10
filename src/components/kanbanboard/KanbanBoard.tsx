@@ -228,27 +228,42 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
         initialTask={draftTask}
         onClose={() => setIsModalOpen(false)}
         onSave={(updated) => {
+          // EDIT: if we have a draftTask, update it in place
+          if (draftTask) {
+            const id = draftTask.id;
+
+            // update the task map
+            setTaskState((prev) => ({
+              ...prev,
+              [id]: {
+                ...prev[id],
+                ...updated, // title, description, priority, tags, dueDate
+              },
+            }));
+
+            // (no column change here because your modal doesn't edit status)
+            setIsModalOpen(false);
+            setDraftTask(null);
+            setActiveColumnId(null);
+            return;
+          }
+
+          // CREATE: if no draftTask, create a new one in the active column
           if (!activeColumnId) return;
 
-          // Create new task
           const newTask: KanbanTask = {
             id: crypto.randomUUID(),
             title: updated.title ?? "",
             description: updated.description,
             priority: updated.priority,
             tags: updated.tags ?? [],
-            dueDate: updated.dueDate,
+            dueDate: updated.dueDate, // this is already a Date from the modal
             status: activeColumnId,
             createdAt: new Date(),
           };
 
-          //  Add task into taskState
-          setTaskState((prev) => ({
-            ...prev,
-            [newTask.id]: newTask,
-          }));
+          setTaskState((prev) => ({ ...prev, [newTask.id]: newTask }));
 
-          // Insert  task into   column's taskIds
           setColumnState((prev) =>
             prev.map((col) =>
               col.id === activeColumnId
@@ -258,6 +273,8 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
           );
 
           setIsModalOpen(false);
+          setDraftTask(null);
+          setActiveColumnId(null);
         }}
       />
 

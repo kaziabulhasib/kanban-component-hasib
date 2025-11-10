@@ -79,7 +79,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
     <Modal open={open} onClose={onClose}>
       <div className='space-y-6'>
         <h2 className='text-2xl font-semibold text-neutral-900'>
-          {initialTask ? "New Task" : "Edit Task"}
+          {initialTask ? "Edit Task" : "New Task"}
         </h2>
 
         <div className='grid grid-cols-1 gap-5'>
