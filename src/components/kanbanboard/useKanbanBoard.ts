@@ -19,7 +19,6 @@ export function useKanbanBoard(
   const STORAGE_TASKS = "kanban_tasks";
   const STORAGE_COLUMNS = "kanban_columns";
 
-  // Column + Task State with persistence
   const [columnState, setColumnState] = useState<KanbanColumn[]>(() => {
     const saved = localStorage.getItem(STORAGE_COLUMNS);
     return saved ? JSON.parse(saved) : columns;
@@ -51,7 +50,15 @@ export function useKanbanBoard(
   const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<KanbanTask | null>(null);
 
+  // ✅ WIP LIMIT CHECK ADDED HERE
   function openCreate(columnId: string) {
+    const col = columnState.find((c) => c.id === columnId);
+
+    if (col?.maxTasks && col.taskIds.length >= col.maxTasks) {
+      alert("Column limit reached!");
+      return;
+    }
+
     setActiveColumnId(columnId);
     setDraftTask(null);
     setIsModalOpen(true);
@@ -92,7 +99,7 @@ export function useKanbanBoard(
     setTaskToDelete(null);
   }
 
-  // Keyboard movement logic stays the same
+  // Keyboard
   function handleKeyboardMove(taskId: string, columnId: string, key: string) {
     const colIndex = columnState.findIndex((c) => c.id === columnId);
     if (colIndex === -1) return;
@@ -160,11 +167,9 @@ export function useKanbanBoard(
   }
 
   return {
-    // state
     columnState,
     taskState,
 
-    // modal
     isModalOpen,
     activeColumnId,
     draftTask,
@@ -172,21 +177,14 @@ export function useKanbanBoard(
     openEdit,
     setIsModalOpen,
 
-    // delete
     confirmOpen,
     taskToDelete,
     requestDelete,
     confirmDelete,
     setConfirmOpen,
-    
 
-    // keyboard
     handleKeyboardMove,
-
-    // setters exposed if needed
     setColumnState,
     setTaskState,
-
-
   };
 }

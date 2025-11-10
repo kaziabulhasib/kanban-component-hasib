@@ -15,16 +15,11 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   onRequestDelete,
   onKeyboardMove,
 }) => {
+  const isFull =
+    column.maxTasks !== undefined && tasks.length >= column.maxTasks;
+
   return (
-    <section
-      className='
-        bg-neutral-50 
-        rounded-lg 
-        flex flex-col 
-        border border-neutral-200 
-        shrink-0
-      '>
-      {/* Header */}
+    <section className='bg-neutral-50 rounded-lg flex flex-col border border-neutral-200 shrink-0'>
       <header
         className='rounded-t-lg py-2 px-3 text-sm font-semibold text-neutral-900 sticky top-0 z-10'
         style={{ backgroundColor: column.color }}>
@@ -32,7 +27,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
         {column.maxTasks ? `/${column.maxTasks}` : ""})
       </header>
 
-      {/* Card List */}
       <div
         className='flex-1 overflow-y-auto p-2 sm:p-3 flex flex-col gap-2 sm:gap-3'
         onDragOver={(e) => {
@@ -59,12 +53,12 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
         )}
       </div>
 
-      {/* Add Task */}
       <Button
         variant='secondary'
         className='rounded-none sm:rounded-b-lg'
-        onClick={() => onTaskCreate?.(column.id)}>
-        + Add Task
+        onClick={() => onTaskCreate?.(column.id)}
+        disabled={isFull}>
+        {isFull ? "Limit Reached" : "+ Add Task"}
       </Button>
     </section>
   );
