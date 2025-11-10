@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../primitives/Modal";
 import type { KanbanTask } from "./KanbanBoard.types";
+import Button from "../primitives/Button";
 
 interface TaskModalProps {
   open: boolean;
@@ -82,8 +83,6 @@ const TaskModal: React.FC<TaskModalProps> = ({
           {initialTask ? "Edit Task" : "New Task"}
         </h2>
 
-     
-
         <div className='grid grid-cols-1 gap-5'>
           <div>
             <label className='block text-sm mb-1 font-medium text-neutral-700'>
@@ -128,7 +127,7 @@ const TaskModal: React.FC<TaskModalProps> = ({
             <label className='block text-sm mb-1 font-medium text-neutral-700'>
               Tags{" "}
               <span className='text-[11px] font-light'>
-                (separate with commas)
+                (separate with comma or space)
               </span>
             </label>
             <input
@@ -154,17 +153,13 @@ const TaskModal: React.FC<TaskModalProps> = ({
         </div>
 
         <div className='flex justify-end gap-3 pt-4 border-t border-neutral-200'>
-          <button
-            onClick={onClose}
-            className='px-4 py-2 text-sm rounded-lg bg-neutral-200 hover:bg-neutral-300 transition'>
+          <Button variant='secondary' onClick={onClose}>
             Cancel
-          </button>
+          </Button>
 
-          <button
-            onClick={handleSubmit}
-            className='px-4 py-2 text-sm rounded-lg bg-primary-500 text-white hover:bg-primary-600 transition'>
+          <Button variant='primary' onClick={handleSubmit}>
             {initialTask ? "Save Changes" : "Create Task"}
-          </button>
+          </Button>
         </div>
       </div>
     </Modal>

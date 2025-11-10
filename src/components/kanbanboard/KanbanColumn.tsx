@@ -1,6 +1,7 @@
 import KanbanCard from "./KanbanCard";
 import type { KanbanColumnProps } from "./KanbanBoard.types";
 import React from "react";
+import Button from "../primitives/Button";
 
 const KanbanColumn: React.FC<KanbanColumnProps> = ({
   column,
@@ -52,11 +53,12 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
       </div>
 
       {/* Add task button */}
-      <button
-        className='py-2 text-sm font-medium text-neutral-700 hover:bg-neutral-100 transition rounded-b-lg'
+      <Button
+        variant='secondary'
+     
         onClick={() => onTaskCreate?.(column.id)}>
         + Add Task
-      </button>
+      </Button>
     </section>
   );
 };

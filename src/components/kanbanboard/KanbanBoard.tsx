@@ -147,7 +147,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
 
   function handleOpenCreate(columnId: string) {
     setActiveColumnId(columnId);
-    setDraftTask(null); // ✅ important: keep this null for CREATE mode
+    setDraftTask(null); 
     setIsModalOpen(true);
   }
 
