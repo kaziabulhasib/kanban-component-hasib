@@ -32,6 +32,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     taskToDelete,
     requestDelete,
     confirmDelete,
+    setConfirmOpen,
 
     // keyboard
     handleKeyboardMove,
@@ -45,13 +46,8 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     onTaskDelete,
   });
 
-  const {
-    
-    handleDragStart,
-    handleDragEnd,
-    handleDragOver,
-    handleDrop,
-  } = useDragAndDrop(columnState, setColumnState, setTaskState, onTaskMove);
+  const { handleDragStart, handleDragEnd, handleDragOver, handleDrop } =
+    useDragAndDrop(columnState, setColumnState, setTaskState, onTaskMove);
 
   return (
     <div className='w-full min-h-screen bg-neutral-100 p-4'>

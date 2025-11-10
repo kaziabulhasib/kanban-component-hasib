@@ -178,6 +178,7 @@ export function useKanbanBoard(
     requestDelete,
     confirmDelete,
     setConfirmOpen,
+    
 
     // keyboard
     handleKeyboardMove,
