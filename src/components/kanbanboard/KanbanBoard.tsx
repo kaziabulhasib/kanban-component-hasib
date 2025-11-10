@@ -42,7 +42,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     useDragAndDrop(columnState, setColumnState, setTaskState, onTaskMove);
 
   return (
-    <div className='w-full min-h-screen bg-neutral-100 p-4'>
+    <div className='w-full h-screen bg-neutral-100 p-4 overflow-hidden flex flex-col'>
       <div className='flex gap-2 mb-3 sm:hidden overflow-x-auto whitespace-nowrap scrollbar-hide py-1'>
         {columnState.map((col, index) => (
           <button
@@ -61,12 +61,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
 
       <div
         id='kanban-slider'
-        className='
-          flex gap-4 overflow-x-auto scroll-smooth
-          max-sm:flex-nowrap max-sm:snap-x max-sm:snap-mandatory
-          md:flex-nowrap md:snap-x md:snap-mandatory
-          lg:flex-nowrap
-        '
+        className='flex gap-4 overflow-x-auto scroll-smooth max-sm:flex-nowrap max-sm:snap-x max-sm:snap-mandatory  md:flex-nowrap md:snap-x md:snap-mandatory lg:flex-nowrap flex-1 pb-4'
         style={{ scrollSnapType: "x mandatory" }}>
         {columnState.map((column) => {
           const tasksForColumn = column.taskIds
