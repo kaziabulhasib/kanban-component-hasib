@@ -38,12 +38,21 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     onTaskDelete,
   });
 
-  const { handleDragStart, handleDragEnd, handleDragOver, handleDrop } =
-    useDragAndDrop(columnState, setColumnState, setTaskState, onTaskMove);
+  const {
+    dragData,
+    handleDragStart,
+    handleDragEnd,
+    handleDragOver,
+    handleDrop,
+  } = useDragAndDrop(columnState, setColumnState, setTaskState, onTaskMove);
 
   return (
     <div className='w-full h-screen bg-neutral-100 p-4 overflow-hidden flex flex-col'>
-      <div className='flex gap-2 mb-3 sm:hidden overflow-x-auto whitespace-nowrap scrollbar-hide py-1'>
+      <div
+        className='
+          flex gap-2 mb-3 sm:hidden
+          overflow-x-auto whitespace-nowrap scrollbar-hide py-1
+        '>
         {columnState.map((col, index) => (
           <button
             key={col.id}
@@ -53,7 +62,10 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
               const width = slider.clientWidth;
               slider.scrollTo({ left: width * index, behavior: "smooth" });
             }}
-            className='px-4 py-2 text-sm rounded-lg bg-neutral-200 whitespace-nowrap flex-shrink-0'>
+            className='
+              px-4 py-2 text-sm rounded-lg
+              bg-neutral-200 whitespace-nowrap flex-shrink-0
+            '>
             {col.title}
           </button>
         ))}
@@ -61,7 +73,14 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
 
       <div
         id='kanban-slider'
-        className='flex gap-4 overflow-x-auto scroll-smooth max-sm:flex-nowrap max-sm:snap-x max-sm:snap-mandatory  md:flex-nowrap md:snap-x md:snap-mandatory lg:flex-nowrap flex-1 pb-4'
+        className='
+          flex gap-4 overflow-x-auto scroll-smooth
+          max-sm:flex-nowrap max-sm:snap-x max-sm:snap-mandatory
+          md:flex-nowrap md:snap-x md:snap-mandatory
+          lg:flex-nowrap
+          flex-1
+          pb-4
+        '
         style={{ scrollSnapType: "x mandatory" }}>
         {columnState.map((column) => {
           const tasksForColumn = column.taskIds
@@ -71,7 +90,10 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
           return (
             <div
               key={column.id}
-              className='shrink-0 snap-start w-full md:w-1/2 lg:w-[320px]'>
+              className='
+                shrink-0 snap-start
+                w-full md:w-1/2 lg:w-[320px]
+              '>
               <KanbanColumnComponent
                 column={column}
                 tasks={tasksForColumn}
@@ -86,6 +108,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
                 onTaskDelete={confirmDelete}
                 onEditTask={openEdit}
                 onKeyboardMove={handleKeyboardMove}
+                dragData={dragData}
               />
             </div>
           );
@@ -106,7 +129,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
                 ...updated,
               },
             }));
-
             setIsModalOpen(false);
             return;
           }

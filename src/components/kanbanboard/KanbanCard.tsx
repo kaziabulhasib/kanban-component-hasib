@@ -14,6 +14,7 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
   handleDragStart,
   handleDragEnd,
   isDragging,
+  isSourceColumnDragging,
   onEdit,
   onRequestDelete,
   onKeyboardMove,
@@ -21,7 +22,6 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
   const [isKeyboardGrabbed, setKeyboardGrabbed] = useState(false);
 
   function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
-    // SPACE or ENTER toggles grab mode
     if (e.key === " " || e.key === "Enter") {
       e.preventDefault();
       setKeyboardGrabbed((prev) => !prev);
@@ -30,7 +30,6 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
 
     if (!isKeyboardGrabbed) return;
 
-    // arrow-key movement inside grabbed mode
     if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
       e.preventDefault();
       onKeyboardMove?.(task.id, columnId, e.key);
@@ -48,13 +47,14 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
       onDoubleClick={() => onEdit?.(task)}
       aria-label={`${task.title}. Press space to grab.`}
       className={clsx(
-        "bg-white border border-neutral-200 rounded-xl p-4 relative shadow-sm",
+        "border border-neutral-200 rounded-xl p-4 relative shadow-sm",
         "transition-all duration-200 cursor-grab active:cursor-grabbing",
         "hover:shadow-md hover:-translate-y-[2px]",
-        isDragging && "opacity-60 scale-[0.97] shadow-lg",
+        isDragging && "scale-105 shadow-lg bg-neutral-200",
+        !isDragging && isSourceColumnDragging && "bg-neutral-100",
+        !isDragging && !isSourceColumnDragging && "bg-white",
         isKeyboardGrabbed && "ring-2 ring-blue-500"
       )}>
-      {/* DELETE BUTTON ON TOP-LEFT */}
       <button
         onClick={(e) => {
           e.stopPropagation();
@@ -68,7 +68,6 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
         </span>
       </button>
 
-      {/* TITLE + PRIORITY */}
       <div className='flex items-start justify-between mb-3 mt-2'>
         <h4 className='font-medium text-[15px] text-neutral-900 leading-snug line-clamp-2'>
           {task.title}
@@ -85,14 +84,12 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
         )}
       </div>
 
-      {/* Description */}
       {task.description && (
         <p className='text-xs text-neutral-600 mb-3 line-clamp-2 leading-relaxed'>
           {task.description}
         </p>
       )}
 
-      {/* Tags + Assignee */}
       <div className='flex items-center justify-between mb-2'>
         <div className='flex flex-wrap gap-1'>
           {task.tags?.slice(0, 3).map((tag) => (
@@ -111,7 +108,6 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
         )}
       </div>
 
-      {/* Due Date */}
       {task.dueDate && (
         <div
           className={clsx(
