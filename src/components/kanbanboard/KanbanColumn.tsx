@@ -13,6 +13,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   onTaskCreate,
   onEditTask,
   onRequestDelete,
+  onKeyboardMove
 }) => {
   return (
     <section className='w-[300px] bg-neutral-50 rounded-lg flex flex-col border border-neutral-200'>
@@ -44,6 +45,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
                 handleDragEnd={handleDragEnd}
                 onEdit={onEditTask}
                 onRequestDelete={onRequestDelete}
+                onKeyboardMove={onKeyboardMove}
               />
             </div>
           ))
@@ -53,10 +55,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
       </div>
 
       {/* Add task button */}
-      <Button
-        variant='secondary'
-     
-        onClick={() => onTaskCreate?.(column.id)}>
+      <Button variant='secondary' onClick={() => onTaskCreate?.(column.id)}>
         + Add Task
       </Button>
     </section>

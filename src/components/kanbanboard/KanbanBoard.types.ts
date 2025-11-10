@@ -27,6 +27,12 @@ export interface KanbanCardProps {
 
   onRequestDelete?: (task: KanbanTask) => void;
   onDelete?: (taskId: string) => void;
+
+  onKeyboardMove?: (
+    taskId: string,
+    columnId: string,
+    direction: string
+  ) => void;
 }
 
 // types for columns
@@ -54,7 +60,7 @@ export interface KanbanColumnProps {
   onTaskUpdate: (taskId: string, updates: Partial<KanbanTask>) => void;
 
   onRequestDelete?: (task: KanbanTask) => void;
-  
+
   onTaskDelete: (taskId: string) => void;
   onEditTask?: (task: KanbanTask) => void;
   //   drag handlers
@@ -68,6 +74,12 @@ export interface KanbanColumnProps {
   handleDragOver: (e: React.DragEvent<HTMLElement>, columnId: string) => void;
 
   handleDrop: (e: React.DragEvent<HTMLElement>, columnId: string) => void;
+
+  onKeyboardMove?: (
+    taskId: string,
+    columnId: string,
+    direction: string
+  ) => void;
 }
 
 // types for the Kanban board

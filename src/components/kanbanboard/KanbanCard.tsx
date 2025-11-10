@@ -1,4 +1,3 @@
-
 import type { KanbanCardProps } from "./KanbanBoard.types";
 import {
   getInitials,
@@ -7,6 +6,7 @@ import {
   formatDate,
 } from "../../utils/task.utils";
 import clsx from "clsx";
+import { useState } from "react";
 
 const KanbanCard: React.FC<KanbanCardProps> = ({
   task,
@@ -16,27 +16,43 @@ const KanbanCard: React.FC<KanbanCardProps> = ({
   isDragging,
   onEdit,
   onRequestDelete,
+  onKeyboardMove,
 }) => {
+  const [isKeyboardGrabbed, setKeyboardGrabbed] = useState(false);
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLDivElement>) {
+    // SPACE or ENTER toggles grab mode
+    if (e.key === " " || e.key === "Enter") {
+      e.preventDefault();
+      setKeyboardGrabbed((prev) => !prev);
+      return;
+    }
+
+    if (!isKeyboardGrabbed) return;
+
+    // arrow-key movement inside grabbed mode
+    if (["ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(e.key)) {
+      e.preventDefault();
+      onKeyboardMove?.(task.id, columnId, e.key);
+    }
+  }
+
   return (
     <div
       draggable
+      tabIndex={0}
+      role='button'
+      onKeyDown={handleKeyDown}
       onDragStart={(e) => handleDragStart(e, task.id, columnId)}
       onDragEnd={handleDragEnd}
-      role='button'
-      tabIndex={0}
       onDoubleClick={() => onEdit?.(task)}
-      aria-label={`${task.title}. Status: ${task.status}. Priority: ${
-        task.priority ?? "none"
-      }. Press space to grab.`}
+      aria-label={`${task.title}. Press space to grab.`}
       className={clsx(
         "bg-white border border-neutral-200 rounded-xl p-4 relative shadow-sm",
         "transition-all duration-200 cursor-grab active:cursor-grabbing",
-
-        // HOVER effect
         "hover:shadow-md hover:-translate-y-[2px]",
-
-        // ✅ DRAG EFFECT — fade + scale
-        isDragging && "opacity-60 scale-[0.97] shadow-lg"
+        isDragging && "opacity-60 scale-[0.97] shadow-lg",
+        isKeyboardGrabbed && "ring-2 ring-blue-500"
       )}>
       {/* DELETE BUTTON ON TOP-LEFT */}
       <button

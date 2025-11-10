@@ -147,7 +147,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
 
   function handleOpenCreate(columnId: string) {
     setActiveColumnId(columnId);
-    setDraftTask(null); 
+    setDraftTask(null);
     setIsModalOpen(true);
   }
 
@@ -188,6 +188,79 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     setTaskToDelete(null);
   }
 
+  // keybaord  function
+
+  function handleKeyboardMove(taskId: string, columnId: string, key: string) {
+    const colIndex = columnState.findIndex((c) => c.id === columnId);
+    if (colIndex === -1) return;
+
+    const column = columnState[colIndex];
+    const taskIds = [...column.taskIds];
+    const index = taskIds.indexOf(taskId);
+    if (index === -1) return;
+
+    // MOVE UP
+    if (key === "ArrowUp" && index > 0) {
+      const temp = taskIds[index - 1];
+      taskIds[index - 1] = taskIds[index];
+      taskIds[index] = temp;
+    }
+
+    // MOVE DOWN
+    if (key === "ArrowDown" && index < taskIds.length - 1) {
+      const temp = taskIds[index + 1];
+      taskIds[index + 1] = taskIds[index];
+      taskIds[index] = temp;
+    }
+
+    // MOVE LEFT
+    if (key === "ArrowLeft" && colIndex > 0) {
+      const prevCol = columnState[colIndex - 1];
+      setColumnState((prev) =>
+        prev.map((col) =>
+          col.id === columnId
+            ? { ...col, taskIds: col.taskIds.filter((id) => id !== taskId) }
+            : col.id === prevCol.id
+            ? { ...col, taskIds: [...col.taskIds, taskId] }
+            : col
+        )
+      );
+
+      setTaskState((prev) => ({
+        ...prev,
+        [taskId]: { ...prev[taskId], status: prevCol.id },
+      }));
+
+      return;
+    }
+
+    // MOVE RIGHT
+    if (key === "ArrowRight" && colIndex < columnState.length - 1) {
+      const nextCol = columnState[colIndex + 1];
+      setColumnState((prev) =>
+        prev.map((col) =>
+          col.id === columnId
+            ? { ...col, taskIds: col.taskIds.filter((id) => id !== taskId) }
+            : col.id === nextCol.id
+            ? { ...col, taskIds: [...col.taskIds, taskId] }
+            : col
+        )
+      );
+
+      setTaskState((prev) => ({
+        ...prev,
+        [taskId]: { ...prev[taskId], status: nextCol.id },
+      }));
+
+      return;
+    }
+    // re order same col
+
+    setColumnState((prev) =>
+      prev.map((col) => (col.id === columnId ? { ...col, taskIds } : col))
+    );
+  }
+
   return (
     <div className='w-full min-h-screen overflow-x-auto bg-neutral-100 p-4'>
       <div className='flex gap-4 w-max'>
@@ -211,6 +284,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
               onRequestDelete={handleRequestDelete}
               onTaskDelete={handleConfirmDelete}
               onEditTask={handleEditTask}
+              onKeyboardMove={handleKeyboardMove}
             />
           );
         })}
