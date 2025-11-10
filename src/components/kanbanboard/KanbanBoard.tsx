@@ -264,7 +264,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
 
   return (
     <div className='w-full min-h-screen bg-neutral-100 p-4'>
-      {/* MOBILE TABS}
+      {/* MOBILE TABS: horizontal scroll + no wrap */}
       <div
         className='
           flex 
