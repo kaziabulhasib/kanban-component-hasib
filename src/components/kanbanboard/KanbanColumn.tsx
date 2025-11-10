@@ -16,17 +16,23 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   onKeyboardMove,
 }) => {
   return (
-    <section className='w-full sm:w-[300px] bg-neutral-50 rounded-lg flex flex-col border border-neutral-200 shrink-0'>
+    <section
+      className='
+        bg-neutral-50 
+        rounded-lg 
+        flex flex-col 
+        border border-neutral-200 
+        shrink-0
+      '>
       {/* Header */}
       <header
         className='rounded-t-lg py-2 px-3 text-sm font-semibold text-neutral-900 sticky top-0 z-10'
-        style={{ backgroundColor: column.color }}
-        aria-label={`${column.title} column. ${tasks.length} tasks.`}>
+        style={{ backgroundColor: column.color }}>
         {column.title} ({tasks.length}
         {column.maxTasks ? `/${column.maxTasks}` : ""})
       </header>
 
-      {/* Card list */}
+      {/* Card List */}
       <div
         className='flex-1 overflow-y-auto p-2 sm:p-3 flex flex-col gap-2 sm:gap-3'
         onDragOver={(e) => {
@@ -38,7 +44,6 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
           tasks.map((task, index) => (
             <div key={task.id} data-index={index}>
               <KanbanCard
-                key={task.id}
                 task={task}
                 columnId={column.id}
                 handleDragStart={handleDragStart}
@@ -54,7 +59,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
         )}
       </div>
 
-      {/* Add task button */}
+      {/* Add Task */}
       <Button
         variant='secondary'
         className='rounded-none sm:rounded-b-lg'
