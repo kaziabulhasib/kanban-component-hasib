@@ -71,7 +71,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     localStorage.setItem(STORAGE_TASKS, JSON.stringify(taskState));
   }, [taskState]);
 
-  // DRAG & DROP
+  // drag & drop 
 
   function handleDragStart(
     e: React.DragEvent<HTMLElement>,
@@ -180,9 +180,9 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     setIsModalOpen(true);
   }
 
-  //
-  // DELETE HANDLERS
-  //
+  
+  // Delete handler
+  
 
   function handleRequestDelete(task: KanbanTask) {
     setTaskToDelete(task);
@@ -209,7 +209,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     setTaskToDelete(null);
   }
 
-  // KEYBOARD MOVE
+  // keyboard move
 
   function handleKeyboardMove(taskId: string, columnId: string, key: string) {
     const colIndex = columnState.findIndex((c) => c.id === columnId);
@@ -280,7 +280,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     );
   }
 
-  // RENDER
+  
 
   return (
     <div className='w-full min-h-screen overflow-x-auto bg-neutral-100 p-4'>

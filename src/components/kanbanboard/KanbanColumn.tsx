@@ -13,10 +13,10 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
   onTaskCreate,
   onEditTask,
   onRequestDelete,
-  onKeyboardMove
+  onKeyboardMove,
 }) => {
   return (
-    <section className='w-[300px] bg-neutral-50 rounded-lg flex flex-col border border-neutral-200'>
+    <section className='w-full sm:w-[300px] bg-neutral-50 rounded-lg flex flex-col border border-neutral-200 shrink-0'>
       {/* Header */}
       <header
         className='rounded-t-lg py-2 px-3 text-sm font-semibold text-neutral-900 sticky top-0 z-10'
@@ -28,7 +28,7 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
 
       {/* Card list */}
       <div
-        className='flex-1 overflow-y-auto p-3 flex flex-col gap-3'
+        className='flex-1 overflow-y-auto p-2 sm:p-3 flex flex-col gap-2 sm:gap-3'
         onDragOver={(e) => {
           e.preventDefault();
           handleDragOver(e, column.id);
@@ -55,7 +55,10 @@ const KanbanColumn: React.FC<KanbanColumnProps> = ({
       </div>
 
       {/* Add task button */}
-      <Button variant='secondary' onClick={() => onTaskCreate?.(column.id)}>
+      <Button
+        variant='secondary'
+        className='rounded-none sm:rounded-b-lg'
+        onClick={() => onTaskCreate?.(column.id)}>
         + Add Task
       </Button>
     </section>
