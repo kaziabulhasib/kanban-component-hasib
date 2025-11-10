@@ -1,18 +1,45 @@
-import React, { useState } from "react";
-import KanbanColumn from "./KanbanColumn";
+import React, { useState, useEffect } from "react";
 
-import type { KanbanTask, KanbanViewProps } from "./KanbanBoard.types";
+import type {
+  KanbanTask,
+  KanbanViewProps,
+  KanbanColumn,
+} from "./KanbanBoard.types";
 import TaskModal from "./TaskModal";
 import ConfirmDelete from "../primitives/ConfirmDelete";
+import KanbanColumnComponent from "./KanbanColumn";
 
 const KanbanBoard: React.FC<KanbanViewProps> = ({
   columns,
   tasks,
   onTaskMove,
-
   onTaskUpdate,
   onTaskDelete,
 }) => {
+  const STORAGE_TASKS = "kanban_tasks";
+  const STORAGE_COLUMNS = "kanban_columns";
+
+  const [columnState, setColumnState] = useState<KanbanColumn[]>(() => {
+    const saved = localStorage.getItem(STORAGE_COLUMNS);
+    return saved ? JSON.parse(saved) : columns;
+  });
+
+  const [taskState, setTaskState] = useState<Record<string, KanbanTask>>(() => {
+    const saved = localStorage.getItem(STORAGE_TASKS);
+    if (!saved) return tasks;
+
+    const parsed = JSON.parse(saved);
+
+    // rehydrate dates
+    for (const id in parsed) {
+      if (parsed[id].dueDate) parsed[id].dueDate = new Date(parsed[id].dueDate);
+      parsed[id].createdAt = new Date(parsed[id].createdAt);
+    }
+
+    return parsed;
+  });
+
+  // drag tracking
   const [dragData, setDragData] = useState<{
     taskId: string | null;
     fromColumnId: string | null;
@@ -25,21 +52,26 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     targetColumnId: null,
   });
 
-  const [columnState, setColumnState] = useState(columns);
-  const [taskState, setTaskState] = useState(tasks);
-
-  // state for modal
-
+  // modal state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeColumnId, setActiveColumnId] = useState<string | null>(null);
   const [draftTask, setDraftTask] = useState<KanbanTask | null>(null);
 
-  // state for delete confirmation
-
+  // delete confirmation
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [taskToDelete, setTaskToDelete] = useState<KanbanTask | null>(null);
 
-  // drag & drop functions
+  //  persist to local storage persist
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_COLUMNS, JSON.stringify(columnState));
+  }, [columnState]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_TASKS, JSON.stringify(taskState));
+  }, [taskState]);
+
+  // DRAG & DROP
 
   function handleDragStart(
     e: React.DragEvent<HTMLElement>,
@@ -62,7 +94,6 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
   }
 
   function handleDragEnd() {
-    // Reset drag state
     setDragData({
       taskId: null,
       fromColumnId: null,
@@ -88,20 +119,14 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     const isSameColumn = fromColumnId === targetColumnId;
 
     if (isSameColumn) {
-      // remove
       sourceCol.taskIds = sourceCol.taskIds.filter((id) => id !== taskId);
-
-      // insert at hoverIndex
       sourceCol.taskIds.splice(dragData.hoverIndex!, 0, taskId);
 
       setColumnState(updatedColumns);
-
       onTaskMove(taskId, fromColumnId, targetColumnId, dragData.hoverIndex!);
-
       return;
     }
 
-    // CROSS-COLUMN MOVE
     sourceCol.taskIds = sourceCol.taskIds.filter((id) => id !== taskId);
 
     targetCol.taskIds.splice(
@@ -143,15 +168,11 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     }));
   }
 
-  // modal functions
-
   function handleOpenCreate(columnId: string) {
     setActiveColumnId(columnId);
     setDraftTask(null);
     setIsModalOpen(true);
   }
-
-  // handle edit task
 
   function handleEditTask(task: KanbanTask) {
     setDraftTask(task);
@@ -159,16 +180,16 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     setIsModalOpen(true);
   }
 
-  // delete confirmation
+  //
+  // DELETE HANDLERS
+  //
+
   function handleRequestDelete(task: KanbanTask) {
     setTaskToDelete(task);
     setConfirmOpen(true);
   }
 
-  // delete task
-
   function handleConfirmDelete(taskId: string) {
-    // remove from tasks map
     setTaskState((prev) => {
       const next = { ...prev };
       delete next[taskId];
@@ -188,7 +209,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     setTaskToDelete(null);
   }
 
-  // keybaord  function
+  // KEYBOARD MOVE
 
   function handleKeyboardMove(taskId: string, columnId: string, key: string) {
     const colIndex = columnState.findIndex((c) => c.id === columnId);
@@ -199,23 +220,21 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
     const index = taskIds.indexOf(taskId);
     if (index === -1) return;
 
-    // MOVE UP
     if (key === "ArrowUp" && index > 0) {
       const temp = taskIds[index - 1];
       taskIds[index - 1] = taskIds[index];
       taskIds[index] = temp;
     }
 
-    // MOVE DOWN
     if (key === "ArrowDown" && index < taskIds.length - 1) {
       const temp = taskIds[index + 1];
       taskIds[index + 1] = taskIds[index];
       taskIds[index] = temp;
     }
 
-    // MOVE LEFT
     if (key === "ArrowLeft" && colIndex > 0) {
       const prevCol = columnState[colIndex - 1];
+
       setColumnState((prev) =>
         prev.map((col) =>
           col.id === columnId
@@ -234,9 +253,9 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
       return;
     }
 
-    // MOVE RIGHT
     if (key === "ArrowRight" && colIndex < columnState.length - 1) {
       const nextCol = columnState[colIndex + 1];
+
       setColumnState((prev) =>
         prev.map((col) =>
           col.id === columnId
@@ -254,12 +273,14 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
 
       return;
     }
-    // re order same col
 
+    // reorder same column
     setColumnState((prev) =>
       prev.map((col) => (col.id === columnId ? { ...col, taskIds } : col))
     );
   }
+
+  // RENDER
 
   return (
     <div className='w-full min-h-screen overflow-x-auto bg-neutral-100 p-4'>
@@ -270,7 +291,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
             .filter(Boolean);
 
           return (
-            <KanbanColumn
+            <KanbanColumnComponent
               key={column.id}
               column={column}
               tasks={tasksForColumn}
@@ -289,33 +310,30 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
           );
         })}
       </div>
-      {/* modal component */}
+
+      {/* Task Modal */}
       <TaskModal
         open={isModalOpen}
         initialTask={draftTask}
         onClose={() => setIsModalOpen(false)}
         onSave={(updated) => {
-          // EDIT: if we have a draftTask, update it in place
           if (draftTask) {
             const id = draftTask.id;
 
-            // update the task map
             setTaskState((prev) => ({
               ...prev,
               [id]: {
                 ...prev[id],
-                ...updated, // title, description, priority, tags, dueDate
+                ...updated,
               },
             }));
 
-            // (no column change here because your modal doesn't edit status)
             setIsModalOpen(false);
             setDraftTask(null);
             setActiveColumnId(null);
             return;
           }
 
-          // CREATE: if no draftTask, create a new one in the active column
           if (!activeColumnId) return;
 
           const newTask: KanbanTask = {
@@ -324,7 +342,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
             description: updated.description,
             priority: updated.priority,
             tags: updated.tags ?? [],
-            dueDate: updated.dueDate, // this is already a Date from the modal
+            dueDate: updated.dueDate,
             status: activeColumnId,
             createdAt: new Date(),
           };
@@ -345,8 +363,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
         }}
       />
 
-      {/* delete confirmation component  */}
-
+      {/* Delete Confirmation */}
       <ConfirmDelete
         open={confirmOpen}
         task={taskToDelete}
