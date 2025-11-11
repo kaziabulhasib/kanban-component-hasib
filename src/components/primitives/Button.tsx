@@ -15,13 +15,18 @@ const Button: React.FC<ButtonProps> = ({
   variant = "primary",
   className,
   children,
+  disabled,
   ...props
 }) => {
   return (
     <button
+      disabled={disabled}
       className={clsx(
         "px-4 py-2 text-sm rounded-lg transition",
         variantStyles[variant],
+
+        disabled && "opacity-50 cursor-not-allowed hover:none hover:bg-inherit",
+
         className
       )}
       {...props}>
