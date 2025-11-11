@@ -74,7 +74,15 @@ export function useDragAndDrop(
     const data = JSON.parse(e.dataTransfer.getData("application/json"));
     const { taskId, fromColumnId } = data;
 
-    if (!taskId || !fromColumnId) return;
+    if (!taskId || !fromColumnId) {
+      setDragData({
+        taskId: null,
+        fromColumnId: null,
+        hoverIndex: null,
+        targetColumnId: null,
+      });
+      return;
+    }
 
     const updatedColumns = [...columnState];
     const sourceCol = updatedColumns.find((col) => col.id === fromColumnId);
@@ -100,6 +108,14 @@ export function useDragAndDrop(
 
       setColumnState(updatedColumns);
       onTaskMove(taskId, fromColumnId, targetColumnId, dragData.hoverIndex!);
+
+      // Clear drag state
+      setDragData({
+        taskId: null,
+        fromColumnId: null,
+        hoverIndex: null,
+        targetColumnId: null,
+      });
       return;
     }
 
@@ -124,6 +140,14 @@ export function useDragAndDrop(
       targetColumnId,
       dragData.hoverIndex ?? targetCol.taskIds.length - 1
     );
+
+    // Clear drag state after drop completes
+    setDragData({
+      taskId: null,
+      fromColumnId: null,
+      hoverIndex: null,
+      targetColumnId: null,
+    });
   }
 
   return {

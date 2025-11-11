@@ -23,6 +23,8 @@ export interface KanbanCardProps {
 
   isDragging?: boolean;
 
+  isSourceColumnDragging?: boolean;
+
   onEdit?: (task: KanbanTask) => void;
 
   onRequestDelete?: (task: KanbanTask) => void;
@@ -72,6 +74,13 @@ export interface KanbanColumnProps {
 
   handleDragEnd: () => void;
   handleDragOver: (e: React.DragEvent<HTMLElement>, columnId: string) => void;
+  dragData: {
+    taskId: string | null;
+    fromColumnId: string | null;
+  };
+
+  isDragging?: boolean;
+  isSourceColumnDragging?: boolean;
 
   handleDrop: (e: React.DragEvent<HTMLElement>, columnId: string) => void;
 
