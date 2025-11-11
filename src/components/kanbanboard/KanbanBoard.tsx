@@ -64,7 +64,7 @@ const KanbanBoard: React.FC<KanbanViewProps> = ({
             }}
             className='
               px-4 py-2 text-sm rounded-lg
-              bg-neutral-200 whitespace-nowrap flex-shrink-0
+              bg-neutral-200 whitespace-nowrap shrink-0
             '>
             {col.title}
           </button>

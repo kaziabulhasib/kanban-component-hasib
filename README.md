@@ -127,4 +127,5 @@ pnpm run dev
 ## 📧 Contact
 
 **Name**: kazi Abul Hasib <Br>
-**Email**: hasibkazi420@gmail.com
+**Email**: hasibkazi420@gmail.com <Br>
+**Whatsapp**: 08101236270

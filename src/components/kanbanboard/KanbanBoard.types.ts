@@ -96,7 +96,7 @@ export interface KanbanColumnProps {
 export interface KanbanViewProps {
   columns: KanbanColumn[];
   tasks: Record<string, KanbanTask>;
-  onTaskMove: (
+  onTaskMove?: (
     taskId: string,
     fromColumn: string,
     toColumn: string,

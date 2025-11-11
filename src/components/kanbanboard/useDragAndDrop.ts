@@ -7,7 +7,7 @@ export function useDragAndDrop(
   setTaskState: React.Dispatch<
     React.SetStateAction<Record<string, KanbanTask>>
   >,
-  onTaskMove: (
+  onTaskMove?: (
     taskId: string,
     fromColumnId: string,
     toColumnId: string,
@@ -107,7 +107,7 @@ export function useDragAndDrop(
       sourceCol.taskIds.splice(dragData.hoverIndex!, 0, taskId);
 
       setColumnState(updatedColumns);
-      onTaskMove(taskId, fromColumnId, targetColumnId, dragData.hoverIndex!);
+      onTaskMove?.(taskId, fromColumnId, targetColumnId, dragData.hoverIndex!);
 
       // Clear drag state
       setDragData({
@@ -134,7 +134,7 @@ export function useDragAndDrop(
 
     setColumnState(updatedColumns);
 
-    onTaskMove(
+    onTaskMove?.(
       taskId,
       fromColumnId,
       targetColumnId,

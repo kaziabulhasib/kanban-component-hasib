@@ -3,7 +3,6 @@ import type {
   KanbanColumn as ColumnType,
   KanbanTask,
 } from "./components/kanbanboard/KanbanBoard.types";
-import TestPage from "./pages/TestModal";
 
 function App() {
   const columns: ColumnType[] = [
@@ -92,14 +91,9 @@ function App() {
       columns={columns}
       tasks={tasks}
       onTaskCreate={(colId, task) => console.log("Create", colId, task)}
-      onTaskMove={(taskId, from, to, idx) =>
-        console.log("Move", taskId, from, to, idx)
-      }
       onTaskUpdate={(taskId, updates) => console.log("Update", taskId, updates)}
       onTaskDelete={(taskId) => console.log("Delete", taskId)}
     />
-
-    // <TestPage />
   );
 }
 
