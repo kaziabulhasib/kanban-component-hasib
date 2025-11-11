@@ -51,7 +51,7 @@ export interface KanbanColumnProps {
   column: KanbanColumn;
   tasks: KanbanTask[];
 
-  onTaskMove: (
+  onTaskMove?: (
     taskId: string,
     fromColumnId: string,
     toColumnId: string,
