@@ -1,79 +1,116 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import KanbanBoard from "./KanbanBoard";
+import KanbanBoardWrapper from "./KanbanBoardWrapper";
 import type { KanbanColumn, KanbanTask } from "./KanbanBoard.types";
 
-const noop = () => {};
-
-const columns: KanbanColumn[] = [
-  {
-    id: "todo",
-    title: "To Do",
-    color: "#e57373",
-    taskIds: ["t1", "t2"],
-    maxTasks: 5,
-  },
-  {
-    id: "inprogress",
-    title: "In Progress",
-    color: "#fbc02d",
-    taskIds: [],
-    maxTasks: 5,
-  },
-  {
-    id: "review",
-    title: "Review",
-    color: "#81c784",
-    taskIds: [],
-    maxTasks: 5,
-  },
-  {
-    id: "done",
-    title: "Done",
-    color: "#64b5f6",
-    taskIds: [],
-    maxTasks: 5,
-  },
+const baseColumns: KanbanColumn[] = [
+  { id: "todo", title: "To Do", color: "#d4d4d8", taskIds: ["t1", "t2"] },
+  { id: "progress", title: "In Progress", color: "#93c5fd", taskIds: ["t3"] },
+  { id: "review", title: "Review", color: "#fcd34d", taskIds: [] },
+  { id: "done", title: "Done", color: "#86efac", taskIds: ["t4"] },
 ];
 
-const tasks: Record<string, KanbanTask> = {
+const baseTasks: Record<string, KanbanTask> = {
   t1: {
     id: "t1",
-    title: "Complete Assignment",
-    description: "Finish the Kanban project",
-    priority: "high",
+    title: "Finish Storybook",
+    description: "Add stories",
     status: "todo",
-    tags: ["urgent", "work"],
+    priority: "high",
+    tags: ["frontend"],
     createdAt: new Date(),
   },
   t2: {
     id: "t2",
-    title: "Buy groceries",
-    description: "Milk, eggs, bread",
-    priority: "medium",
+    title: "Write README",
     status: "todo",
-    tags: ["personal"],
+    priority: "medium",
+    tags: ["docs"],
+    createdAt: new Date(),
+  },
+  t3: {
+    id: "t3",
+    title: "Fix drag",
+    status: "progress",
+    priority: "urgent",
+    tags: ["bug"],
+    createdAt: new Date(),
+  },
+  t4: {
+    id: "t4",
+    title: "Refactor components",
+    status: "done",
+    priority: "low",
+    tags: ["cleanup"],
     createdAt: new Date(),
   },
 };
 
-const meta: Meta<typeof KanbanBoard> = {
-  title: "Kanban/KanbanBoard",
-  component: KanbanBoard,
-  parameters: {
-    layout: "fullscreen",
-  },
-};
+const noop = () => {};
 
+const meta: Meta<typeof KanbanBoardWrapper> = {
+  title: "Kanban/KanbanBoard",
+  component: KanbanBoardWrapper,
+  parameters: { layout: "fullscreen" },
+};
 export default meta;
 
-type Story = StoryObj<typeof KanbanBoard>;
+type Story = StoryObj<typeof KanbanBoardWrapper>;
 
 export const Default: Story = {
   args: {
-    columns,
-    tasks,
+    columns: baseColumns,
+    tasks: baseTasks,
     onTaskMove: noop,
     onTaskUpdate: noop,
     onTaskDelete: noop,
+    onTaskCreate: noop,
   },
+};
+
+export const Empty: Story = {
+  args: {
+    columns: baseColumns.map((c) => ({ ...c, taskIds: [] })),
+    tasks: {},
+    onTaskMove: noop,
+    onTaskUpdate: noop,
+    onTaskDelete: noop,
+    onTaskCreate: noop,
+  },
+};
+
+const manyTasks: Record<string, KanbanTask> = {};
+const manyCols: KanbanColumn[] = JSON.parse(JSON.stringify(baseColumns));
+
+for (let i = 1; i <= 30; i++) {
+  const id = `m${i}`;
+  manyTasks[id] = {
+    id,
+    title: `Task ${i}`,
+    status: "todo",
+    priority: "medium",
+    tags: ["load-test"],
+    createdAt: new Date(),
+  };
+  manyCols[0].taskIds.push(id);
+}
+
+export const LargeDataset: Story = {
+  args: {
+    columns: manyCols,
+    tasks: manyTasks,
+    onTaskMove: noop,
+    onTaskUpdate: noop,
+    onTaskDelete: noop,
+    onTaskCreate: noop,
+  },
+};
+
+export const MobileView: Story = {
+  parameters: { viewport: { defaultViewport: "iphone12" } },
+  args: Default.args,
+};
+
+export const Interactive: Story = {
+  args: Default.args,
+  parameters: { controls: { expanded: true } },
 };
